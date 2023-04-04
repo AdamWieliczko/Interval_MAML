@@ -380,13 +380,14 @@ if __name__ == '__main__':
         elif params.method in hypernet_types.keys():
             hn_type: Type[HyperNetPOC] = hypernet_types[params.method]
             model = hn_type(model_dict[params.model], params=params, **train_few_shot_params)
-        elif params.method == "hyper_maml" or params.method == 'bayes_hmaml':
+        elif params.method == "hyper_maml" or params.method == 'bayes_hmaml' or params.method == 'interval_maml':
             backbone.ConvBlock.maml = True
             backbone.SimpleBlock.maml = True
             backbone.BottleneckBlock.maml = True
             backbone.ResNet.maml = True
             model = BayesHMAML(model_dict[params.model], params=params, approx=(params.method == 'maml_approx'),
                                **train_few_shot_params)
+            # model = IntervalMAML()
             if params.dataset in ['omniglot', 'cross_char']:  # maml use different parameter in omniglot
                 model.n_task = 32
                 model.task_update_num = 1
@@ -409,7 +410,7 @@ if __name__ == '__main__':
     print(params.checkpoint_dir)
     start_epoch = params.start_epoch
     stop_epoch = params.stop_epoch
-    if params.method in ['maml', 'maml_approx', 'hyper_maml','bayes_hmaml']:
+    if params.method in ['maml', 'maml_approx', 'hyper_maml','bayes_hmaml', 'interval_maml']:
         stop_epoch = params.stop_epoch * model.n_task  # maml use multiple tasks in one update
 
     if params.resume:

@@ -5,6 +5,7 @@ import torch.nn as nn
 import math
 import torch.nn.functional as F
 from torch.nn.utils.weight_norm import WeightNorm
+from methods.hypernets.intervalmaml import IntervalLinear
 # Basic ResNet model
 
 def init_layer(L):
@@ -66,20 +67,13 @@ class Linear_fw(nn.Linear): #used in MAML to forward input with fast weight
 class IntervalLinear_fw(Linear_fw):
     def __init__(self, in_features, out_features):
         super(IntervalLinear_fw, self).__init__(in_features, out_features)
+        self.interval = IntervalLinear(in_features, out_features, 0., False, 0., False, False, -5, 0.00000000001)
         self.weight.logvar = None
         self.weight.mu = None
         self.bias.logvar = None
         self.bias.mu = None
     def forward(self, x):
-        if self.weight.fast is not None and self.bias.fast is not None:
-            preds = []
-            for w, b in zip(self.weight.fast, self.bias.fast):
-                preds.append(F.linear(x, w, b))
-
-            out = sum(preds) / len(preds)
-        else:
-            out = super(BLinear_fw, self).forward(x)
-        return out
+        return self.interval(x)[:, 1].squeeze().rename(None)
 
 class BLinear_fw(Linear_fw): #used in BHMAML to forward input with fast weight
     def __init__(self, in_features, out_features):
