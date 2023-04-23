@@ -1,7 +1,7 @@
 .idea
 # filelists
-filelists
-!filelists/*/*.[sh|py]
+#filelists
+#!filelists/*/*.[sh|py]
 
 # filelist configs
 .configs.py

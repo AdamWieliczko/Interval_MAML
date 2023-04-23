@@ -67,6 +67,7 @@ class BayesHMAML(HyperMAML):
             if i < self.hn_tn_depth - 1:
                 linear = backbone.BLinear_fw(in_dim, out_dim)
             else:
+                layers.append(F.ReLU())
                 linear = backbone.IntervalLinear_fw(in_dim, out_dim)
             linear.bias.data.fill_(0)
 

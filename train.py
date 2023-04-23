@@ -119,7 +119,7 @@ def train(base_loader, val_loader, model, optimization, start_epoch, stop_epoch,
         model.stop_epoch = stop_epoch
 
         model.train()
-        if params.method in ['hyper_maml','bayes_hmaml']:
+        if params.method in ['hyper_maml','bayes_hmaml', 'interval_maml']:
             metrics = model.train_loop(epoch, base_loader, optimizer)
         else:
             metrics = model.train_loop(epoch, base_loader, optimizer)  # model are called by reference, no need to return
@@ -180,14 +180,14 @@ def train(base_loader, val_loader, model, optimization, start_epoch, stop_epoch,
                 outfile = os.path.join(params.checkpoint_dir, 'best_model.tar')
                 torch.save({'epoch': epoch, 'state': model.state_dict()}, outfile)
 
-                if params.maml_save_feature_network and params.method in ['maml', 'hyper_maml','bayes_hmaml']:
+                if params.maml_save_feature_network and params.method in ['maml', 'hyper_maml','bayes_hmaml', 'interval_maml']:
                     outfile = os.path.join(params.checkpoint_dir, 'best_feature_net.tar')
                     torch.save({'epoch': epoch, 'state': model.feature.state_dict()}, outfile)
 
             outfile = os.path.join(params.checkpoint_dir, 'last_model.tar')
             torch.save({'epoch': epoch, 'state': model.state_dict()}, outfile)
 
-            if params.maml_save_feature_network and params.method in ['maml', 'hyper_maml','bayes_hmaml']:
+            if params.maml_save_feature_network and params.method in ['maml', 'hyper_maml','bayes_hmaml', 'interval_maml']:
                 outfile = os.path.join(params.checkpoint_dir, 'last_feature_net.tar')
                 torch.save({'epoch': epoch, 'state': model.feature.state_dict()}, outfile)
 
@@ -331,7 +331,7 @@ if __name__ == '__main__':
             model = BaselineTrain(model_dict[params.model], params.num_classes, loss_type='dist')
 
     elif params.method in ['DKT', 'protonet', 'matchingnet', 'relationnet', 'relationnet_softmax', 'maml',
-                           'maml_approx', 'hyper_maml','bayes_hmaml'] + list(hypernet_types.keys()):
+                           'maml_approx', 'hyper_maml','bayes_hmaml', 'interval_maml'] + list(hypernet_types.keys()):
         n_query = max(1, int(
             16 * params.test_n_way / params.train_n_way))  # if test_n_way is smaller than train_n_way, reduce n_query to keep batch size small
         print("n_query", n_query)
