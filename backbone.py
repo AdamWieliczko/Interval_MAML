@@ -67,7 +67,7 @@ class Linear_fw(nn.Linear): #used in MAML to forward input with fast weight
 class IntervalLinear_fw(Linear_fw):
     def __init__(self, in_features, out_features):
         super(IntervalLinear_fw, self).__init__(in_features, out_features)
-        self.interval = IntervalLinear(in_features, out_features, 0., False, 0., False, False, -5, 0.00000000001)
+        self.interval = IntervalLinear(in_features, out_features, 0.00000000001, False, 0., False, False, -5, 0.00000000001)
         self.weight.logvar = None
         self.weight.mu = None
         self.bias.logvar = None
